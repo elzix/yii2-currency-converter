@@ -47,13 +47,20 @@ use Yii;
 use elzix\CurrencyConverter\CurrencyConverter;
 
 $converter = new CurrencyConverter();
-$rate =  $converter->convert('Your-API-Key', 'USD', 'NPR');
+$ratea =  $converter->convert('Your-API-Key', 'USD', 'NPR'); // Use Single Currency Code
+$rateb =  $converter->convert('Your-API-Key', 'USD', 'NGN,NPR,KES'); // Use Multiple Currency Codes
+$ratec =  $converter->convert('Your-API-Key', 'US', 'NP'); // Use Single Country Code
+$rated =  $converter->convert('Your-API-Key', 'US', 'NG,NP,KE'); // Use Multiple Country Codes
+$ratee =  $converter->convert('Your-API-Key', 'USD', 'NG,NPR,KE'); // Mix Multiple Country/Currency Codes
 
-$rates =  $converter->convert('Your-API-Key', 'USD', 'NGN,NPR,KES');
+print_r($ratea);  // it will print current Nepalese currency (NPR) rate according to USD
+print_r($rateb);  // it will print current Nigerian, Nepalese and Kenyan currencies (NGN,NPR,KES) rates according to USD
+print_r($ratec);  // it will print current Nepalese (NP) currency rate according to US
+print_r($rated);  // it will print current Nigerian, Nepalese and Kenyan (NG,NP,KE) currencies rates according to US
+print_r($ratee);  // it will print current Nigerian, Nepalese and Kenyan currencies (NG,NPR,KE) rates according to USD
 
-print_r($rate);  // it will print current Nepalese currency (NPR) rate according to USD
-
-print_r($rates);  // it will print current Nigerian, Nepalese and Kenyan currencies (NGN,NPR,KES) rates according to USD
+$z = 'KE'
+print $ratee->$z;  // it will print current Kenyan (KE) currency rate inside $ratee object
 
 
 ```

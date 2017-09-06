@@ -2,6 +2,9 @@
 
 namespace elzix\CurrencyConverter;
 
+use Yii;
+use yii\base\UserException;
+
 class CountryToCurrency
 {
 
@@ -256,22 +259,51 @@ class CountryToCurrency
      *
      * @param  string $countryCode Country code
      * @return string
-     * @throws Exception\InvalidArgumentException
+     * @throws UserException
      */
     public static function getCurrency($countryCode)
     {
-        if(strlen($countryCode) < 3):
+        if(strlen($countryCode) < 3): //query one country code
             if (!array_key_exists($countryCode, self::$currencies))
-                throw new Exception\InvalidArgumentException(sprintf('Unsupported Country Code, %s', $countryCode));
+                throw new UserException(sprintf('Unsupported Country Code, %s', $countryCode));
             return self::$currencies[$countryCode];
         else :
-            if(strlen($countryCode) > 3) {
+            if(strpos($countryCode, ',')) { //query for array
                 $currencies = explode(',', $countryCode);
-                foreach ($currencies as $currency)
-                    if (!in_array($country, self::$currencies))
-                        throw new Exception\InvalidArgumentException(sprintf('Unsupported Currency Code, %s', $currency));
+                $notFound = $x = 0;
+                $currencyCode[$x] = '';
+                foreach ($currencies as $currency):
+                    if(strlen($currency) < 3){ //query more than one country code used
+                        if (!array_key_exists($currency, self::$currencies)){ 
+                            throw new UserException(sprintf('Unsupported Country Code, %s', $currency));
+                            $notFound = 1;
+                        }
+                        else //in_array(needle, haystack)
+                            if (!in_array(self::$currencies[$currency], $currencyCode))
+                                $currencyCode[$x] = self::$currencies[$currency];
+                    }
+                    else{ //query more than one currency code
+                        if (!in_array($currency, self::$currencies)){
+                            throw new UserException(sprintf('Unsupported Currency Code, %s', $currency));
+                            $notFound = 1;
+                        }
+                        else 
+                            if (!in_array($currency, $currencyCode))
+                                $currencyCode[$x] = $currency;
+                    }
+                    $x++;
+                endforeach;
+                    
+                if ($notFound == 0){
+                    $currencyCode = implode(',', $currencyCode);
+                    return $currencyCode;
+                }
             }
-            else return $countryCode;
+            else { //query one currency code
+                if (!in_array($countryCode, self::$currencies))
+                    throw new UserException(sprintf('Unsupported Currency Code, %s', $countryCode));
+                else return $countryCode;
+            }return $countryCode;
         endif;        
     }
 }

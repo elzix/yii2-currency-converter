@@ -2,6 +2,9 @@
 
 namespace elzix\CurrencyConverter;
 
+use Yii;
+use yii\base\UserException;
+
 class CurrencyConverter implements CurrencyConverterInterface
 {
 
@@ -20,8 +23,8 @@ class CurrencyConverter implements CurrencyConverterInterface
 
         $rate = $this->getRateProvider()->getRate($api, $fromCurrency, $toCurrency);
 
-        if (strlen($toCurrency) > 3 ):
-            $currencies = explode(',', $to);
+        if (strpos($toCurrency,',')):
+            $currencies = explode(',', $toCurrency);
             foreach ($currencies as $currency) {
                 $rates[$currency] = $rate->$currency * $amount;
             }
@@ -64,22 +67,22 @@ class CurrencyConverter implements CurrencyConverterInterface
      *
      * @param string|array $data
      * @return string
-     * @throws Exception\InvalidArgumentException
+     * @throws UserException
      */
     protected function parseCurrencyArgument($data)
     {
         if (is_string($data)) {
-            $currency = $data;
+            $currency = CountryToCurrency::getCurrency($data);
         } elseif (is_array($data)) {
             if (isset($data['country'])) {
                 $currency = CountryToCurrency::getCurrency($data['country']);
             } elseif (isset($data['currency'])) {
                 $currency = $data['currency'];
             } else {
-                throw new Exception\InvalidArgumentException('Please provide country or currency!');
+                throw new UserException('Please provide country or currency!');
             }
         } else {
-            throw new Exception\InvalidArgumentException('Invalid currency provided. String or array expected.');
+            throw new UserException('Invalid currency provided. String or array expected.');
         }
 
         return $currency;
