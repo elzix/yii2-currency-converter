@@ -35,6 +35,6 @@ class oxrApi implements ProviderInterface
         // Decode JSON response:
         $latest = json_decode($json);
 
-        return (strlen($toCurrency) > 3 )? $latest['rates'] : $latest['rates'][$toCurrency];
+        return (strlen($toCurrency) > 3 )? $latest->rates : $latest->rates->$toCurrency;
     }
 }

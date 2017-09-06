@@ -20,7 +20,15 @@ class CurrencyConverter implements CurrencyConverterInterface
 
         $rate = $this->getRateProvider()->getRate($api, $fromCurrency, $toCurrency);
 
-        return $rate * $amount;
+        if (strlen($toCurrency) > 3 ):
+            $currencies = explode(',', $to);
+            foreach ($currencies as $currency) {
+                $rates[$currency] = $rate->$currency * $amount;
+            }
+            return $rates;
+        else:
+            return $rate * $amount;
+        endif;
     }
 
     /**
