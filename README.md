@@ -59,7 +59,7 @@ print_r($ratec);  // it will print current Nepalese (NP) currency rate according
 print_r($rated);  // it will print current Nigerian, Nepalese and Kenyan (NG,NP,KE) currencies rates according to US
 print_r($ratee);  // it will print current Nigerian, Nepalese and Kenyan currencies (NG,NPR,KE) rates according to USD
 
-$z = 'KE'
+$z = 'KE';
 print $ratee->$z;  // it will print current Kenyan (KE) currency rate inside $ratee object
 
 
