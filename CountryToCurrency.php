@@ -1,67 +1,14 @@
-Yii2 Currency Converter
-=======================
-This extension will help to find out current currency conversion rate. This extension uses Open Exchange Rates's currency conversion API.
+<?php
 
-Why Use It
------------
-*   Reliable Rate, Uses Open Exchange Rates API
-*   Conversion without curreny code (from country code)
-*   Conversion of multiple currencies (Comma separated)
+namespace elzix\CurrencyConverter;
 
-Requirements
------------
-*   PHP version 5.4 or later
-*   Curl Extension (Optional)
+class CountryToCurrency
+{
 
-
-
-Installation
-------------
-
-The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
-
-Either run
-
-```
-php composer.phar require --prefer-dist elzix/yii2-currency-converter "dev-master"
-```
-
-or add
-
-```
-"elzix/yii2-currency-converter": "dev-master"
-```
-
-to the require section of your `composer.json` file.
-
-
-Usage
------
-
-First create an account on https://openexchangerates.org/ to obtain an API Key.
-
-Once the extension is installed, simply use it in your code by  :
-
-```php
-use Yii;
-use elzix\CurrencyConverter\CurrencyConverter;
-
-$converter = new CurrencyConverter();
-$rate =  $converter->convert('Your-API-Key', 'USD', 'NPR');
-
-$rates =  $converter->convert('Your-API-Key', 'USD', 'NGN,NPR,KES');
-
-print_r($rate);  // it will print current Nepalese currency (NPR) rate according to USD
-
-print_r($rates);  // it will print current Nigerian, Nepalese and Kenyan currencies (NGN,NPR,KES) rates according to USD
-
-
-```
-
-Available Currency Codes
------------------------
-```php
-$currencies = [
+    /**
+     * @var array    key contains country code, value contains respective country currency
+     */
+    protected static $currencies = [
         'AF' => 'AFA',
         'AL' => 'ALL',
         'DZ' => 'DZD',
@@ -81,7 +28,7 @@ $currencies = [
         'BH' => 'BHD',
         'BD' => 'BDT',
         'BB' => 'BBD',
-        'BY' => 'BYR',
+        'BY' => 'BYN',
         'BE' => 'EUR',
         'BZ' => 'BZD',
         'BJ' => 'XAF',
@@ -304,4 +251,27 @@ $currencies = [
         'ZW' => 'USD'
     ];
 
-```
+    /**
+     * Gets Currency code by Country code
+     *
+     * @param  string $countryCode Country code
+     * @return string
+     * @throws Exception\InvalidArgumentException
+     */
+    public static function getCurrency($countryCode)
+    {
+        if(strlen($countryCode) < 3):
+            if (!array_key_exists($countryCode, self::$currencies))
+                throw new Exception\InvalidArgumentException(sprintf('Unsupported Country Code, %s', $countryCode));
+            return self::$currencies[$countryCode];
+        else :
+            if(strlen($countryCode) > 3) {
+                $currencies = explode(',', $countryCode);
+                foreach ($currencies as $currency)
+                    if (!in_array($country, self::$currencies))
+                        throw new Exception\InvalidArgumentException(sprintf('Unsupported Currency Code, %s', $currency));
+            }
+            else return $countryCode;
+        endif;        
+    }
+}
